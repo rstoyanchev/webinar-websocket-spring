@@ -77,16 +77,11 @@
 </div>
 
 <div id="slides" class="offscreen" style="display:none;">
-<div class="slide" data-transition="none">
-  <div class="content subsection" ref="overview/slides/1">
-<h1>WebSocket Browser Apps with Spring</h1>
-
-<br><br>
-
+<div class="slide" data-transition="none"><div class="content subsection" ref="overview/slides/1">
+<h1>WebSocket Browser Apps<br>with Spring</br>
 
 <h2><a href="https://twitter.com/rstoya05">Rossen Stoyanchev</a></h2>
-</br>
-</br>
+</h1>
 </div>
 </div><div class="slide" data-transition="none">
   <div class="content small bullets incremental" ref="overview/slides/2">
@@ -100,12 +95,12 @@
 <ul>
 <li>Much debate on JSR expert group</li>
 <li>Convergance of pre-existing implementations</li>
-<li>Result:<br>All-new WebSocket implementations</br>
-</li>
-
+<li>Resulted in all-new WebSocket runtimes</li>
 </ul>
+
 </br>
-</br></div>
+</br>
+</div>
 </div><div class="slide" data-transition="none">
   <div class="content small bullets incremental" ref="overview/slides/3">
 <h1>Runtime Support</h1>
@@ -139,9 +134,7 @@
 </li></ul></br></br></div>
 </div><div class="slide" data-transition="none">
   <div class="content smaller bullets incremental" ref="overview/slides/5">
-<h1>WebSocket API</h1>
-
-<h1>Is Just Too Low Level</h1>
+<h1>WebSocket API - Very Low Level</h1>
 
 <br><br>
 
@@ -161,7 +154,7 @@
 <h1>Raw WebSocket</h1>
 
 <ul>
-<li>A message is a blank page--<br>you can write anything (custom format anyone?)</br>
+<li>A message is a blank page--<br>you can write anything (custom format?)</br>
 <li>Can't provide useful annotations--<br>what's the equivalent of <code>@RequestMapping</code>?</br>
 <li>How do broadcast to some subset of users?</li>
 <li>No guarantees for message delivery</li>
@@ -181,12 +174,45 @@
 <li>Transparent WebSocket emulation based on <a href="sockjs.org">SockJS</a></li>
 <li>Abstractions for building messaging architectures--<br><code>Message</code>, <code>MessageChannel</code>, <code>MessageHandler</code>, ...</br>
 <li><a href="http://stomp.github.io/">STOMP</a> sub-protocol support</li>
-<li>A programming model to go beyond<br> <code>"Hello WebSocket world!"</code></br>
+<li>A programming model and foundation for<br>beyond <code>"Hello WebSocket world!"</code></br>
 </li>
 
 </li>
 </ul>
 </br></br></div>
+</div><div class="slide" data-transition="none">
+  <div class="content small bullets incremental" ref="overview/slides/8">
+<h1><a href="https://github.com/sockjs/sockjs-client">SockJS</a></h1>
+
+<br><br>
+
+
+<ul>
+<li>Emulate WebSocket API as close as possible</li>
+<li>At least one streaming protocol per major browser</li>
+<li>Cross-domain and cookie support</li>
+<li>Polling in old browsers, hosts behind restrictive proxies</li>
+<li>No Flash inside</li>
+</ul>
+
+</br>
+</br>
+</div>
+</div><div class="slide" data-transition="none">
+  <div class="content small" ref="overview/slides/9">
+<h2>SockJS and WebSocket</h2>
+
+<h2>are transport layer concerns both interesting on their own</h2>
+
+<br><br><br>
+
+
+<h2>However this presentation</h2>
+
+<h2>focuses on the higher-level programming model</h2>
+</br>
+</br>
+</br></div>
 </div><div class="slide" data-transition="none"><div class="content subsection" ref="stomp/slides/1">
 <h1>STOMP</h1>
 </div>
@@ -482,8 +508,140 @@ public class Config implements WebSocketMessageBrokerConfigurer {
 </ul>
 
 </div>
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="user-information/slides/1">
+<h1>User Information</h1>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smaller bullets incremental" ref="user-information/slides/2">
+<h1>Authentication</h1>
+
+<ul>
+<li>STOMP <code>CONNECT</code> frame has authentication headers</li>
+<li>Over WebSocket we can use HTTP</li>
+<li>Protect application as usual, e.g. Spring Security</li>
+<li>Messages enriched with "user" header</li>
+</ul>
+
+</div>
+</div><div class="slide" data-transition="none"><div class="content smaller" ref="user-information/slides/3">
+<h1>Access to User Information</h1>
+
+<pre class="sh_java"><code>
+@Controller
+public class GreetingController {
+
+
+  @MessageMapping("/greeting")
+  @SendTo("/topic/greetings")
+  public String greet(String greeting, Principal user) {
+      return "[" + user + "] says: " + greeting;
+  }
+
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smaller" ref="user-information/slides/4">
+<h1>Report Error to User</h1>
+
+<pre class="sh_java"><code>
+@Controller
+public class GreetingController {
+
+  // ...
+
+  @MessageExceptionHandler
+  @SendToUser("/queue/errors")
+  public String handleException(IllegalStateException ex) {
+    return ex.getMessage();
+  }
+
+}</code></pre>
+</div>
+</div><div class="slide" data-transition="none"><div class="content smaller" ref="user-information/slides/5">
+<h1>Send Async Results To User</h1>
+
+<pre class="sh_java"><code>@Service
+public class TradeService {
+
+  @Autowired
+  private SimpMessagingTemplate template;
+
+
+  public void executeTrade(Trade trade) {
+
+    String user = trade.getUser();
+    String dest = "/queue/position-updates";
+    TradeResult result = ...
+
+    this.template.convertAndSendToUser(user, dest, result);
+  }
+
+}</code></pre>
+</div>
 </div><div class="slide" data-transition="none">
-  <div class="content" ref="message-broker/slides/6">
+  <div class="content smaller bullets incremental" ref="user-information/slides/6">
+<h1>How "SendToUser" Works</h1>
+
+<h2><em>(server side)</em></h2>
+
+<br><br>
+
+
+<ul>
+<li>When you use <code>@SendToUser("/queue/a")</code></li>
+<li>Resulting destination is <code>"/user/{user}/queue/a"</code></li>
+<li>This is resolved to <code>"/queue/a/"</code> + <code>unique queue-suffix</code></li>
+<li>and then sent to broker channel</li>
+</ul>
+
+</br>
+</br>
+</div>
+</div><div class="slide" data-transition="none">
+  <div class="content smaller bullets incremental" ref="user-information/slides/7">
+<h1>How Send-To-User Works</h1>
+
+<h2><em>(client side)</em></h2>
+
+<br><br>
+
+
+<ul>
+<li>Client subscribes to queue with unique name suffix</li>
+<li>STOMP <code>CONNECTED</code> frame provides that suffix</li>
+<li>as well as current user name</li>
+</ul>
+
+</br>
+</br>
+</div>
+</div><div class="slide" data-transition="none"><div class="content small center" ref="user-information/slides/8">
+<h1>Message Flow</h1>
+
+<br>
+
+
+<p><img src="./file/user-information/architecture-full.png" alt="Diagram"/></p>
+</br>
+</div>
+</div><div class="slide" data-transition="none">
+  <div class="content smaller bullets incremental" ref="user-information/slides/9">
+<h1>Managing Inactive Queues</h1>
+
+<h2><em>(full-featured brokers)</em></h2>
+
+<br><br>
+
+
+<ul>
+<li>Check broker documentation</li>
+<li>For example RabbitMQ creates auto-delete queue<br>with destinations like <code>"/exchange/amq.direct/a"</code></br>
+<li>ActiveMQ has <a href="http://activemq.apache.org/delete-inactive-destinations.html">config options</a> to purge inactive destinations</li>
+</li>
+
+</ul>
+</br>
+</br></div>
+</div><div class="slide" data-transition="none">
+  <div class="content" ref="end/slides/1">
 <h1>Demo</h1>
 
 <br><br>
@@ -496,7 +654,7 @@ public class Config implements WebSocketMessageBrokerConfigurer {
 </br>
 </div>
 </div><div class="slide" data-transition="none">
-  <div class="content small" ref="end/slides/1">
+  <div class="content small" ref="end/slides/2">
 <h1>This presenation on Github</h1>
 
 <br><br>
@@ -508,10 +666,10 @@ public class Config implements WebSocketMessageBrokerConfigurer {
 </br>
 </br>
 </div>
-</div><div class="slide" data-transition="none"><div class="content subsection" ref="end/slides/2">
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="end/slides/3">
 <h1>Questions?</h1>
 </div>
-</div><div class="slide" data-transition="none"><div class="content subsection" ref="end/slides/3">
+</div><div class="slide" data-transition="none"><div class="content subsection" ref="end/slides/4">
 <h1>Thank You!</h1>
 
 <p>Twitter</p>
