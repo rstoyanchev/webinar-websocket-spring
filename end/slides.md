@@ -1,4 +1,10 @@
 
+!SLIDE
+# Demo
+<br><br>
+## [https://github.com/rstoyanchev/](github.com/rstoyanchev/spring-websocket-portfolio)
+## [spring-websocket-portfolio](github.com/rstoyanchev/spring-websocket-portfolio)
+
 !SLIDE small
 # This presenation on Github
 <br><br>

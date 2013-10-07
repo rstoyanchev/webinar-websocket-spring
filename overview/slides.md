@@ -1,7 +1,6 @@
 !SLIDE subsection
 
-# WebSocket Browser Apps with Spring
-<br><br>
+# WebSocket Browser Apps<br>with Spring
 ## [Rossen Stoyanchev](https://twitter.com/rstoya05)
 
 !SLIDE small bullets incremental
@@ -10,7 +9,7 @@
 <br><br>
 * Much debate on JSR expert group
 * Convergance of pre-existing implementations
-* Result:<br>All-new WebSocket implementations
+* Resulted in all-new WebSocket runtimes
 
 !SLIDE small bullets incremental
 # Runtime Support
@@ -29,8 +28,7 @@
 * Too low level--<br>need a framework or you'll end up building one
 
 !SLIDE smaller bullets incremental
-# WebSocket API
-# Is Just Too Low Level
+# WebSocket API - Very Low Level
 <br><br>
 * Single WebSocket connection per client
 * results in single `@ServerEndpoint` per application
@@ -40,7 +38,7 @@
 !SLIDE smaller bullets incremental
 # Raw WebSocket
 
-* A message is a blank page--<br>you can write anything (custom format anyone?)
+* A message is a blank page--<br>you can write anything (custom format?)
 * Can't provide useful annotations--<br>what's the equivalent of `@RequestMapping`?
 * How do broadcast to some subset of users?
 * No guarantees for message delivery
@@ -51,6 +49,25 @@
 * Transparent WebSocket emulation based on [SockJS](sockjs.org)
 * Abstractions for building messaging architectures--<br>`Message`, `MessageChannel`, `MessageHandler`, ...
 * [STOMP](http://stomp.github.io/) sub-protocol support
-* A programming model to go beyond<br> `"Hello WebSocket world!"`
+* A programming model and foundation for<br>beyond `"Hello WebSocket world!"`
+
+!SLIDE small bullets incremental
+# [SockJS](https://github.com/sockjs/sockjs-client)
+<br><br>
+* Emulate WebSocket API as close as possible
+* At least one streaming protocol per major browser
+* Cross-domain and cookie support
+* Polling in old browsers, hosts behind restrictive proxies
+* No Flash inside
+
+!SLIDE small
+
+## SockJS and WebSocket
+## are transport layer concerns both interesting on their own
+<br><br><br>
+## However this presentation
+## focuses on the higher-level programming model
+
+
 
 

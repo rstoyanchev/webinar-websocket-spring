@@ -42,11 +42,5 @@
 * Any additional features
 * Application is now backed by message broker
 
-!SLIDE
-# Demo
-<br><br>
-## [https://github.com/rstoyanchev/](github.com/rstoyanchev/spring-websocket-portfolio)
-## [spring-websocket-portfolio](github.com/rstoyanchev/spring-websocket-portfolio)
-
 
 
