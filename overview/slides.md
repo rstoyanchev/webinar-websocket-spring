@@ -14,7 +14,7 @@
 !SLIDE small bullets incremental
 # Runtime Support
 
-* Tomcat 8 (currently RC1)-<br>expect backport to Tomcat 7 soon
+* Tomcat 8 (currently RC3)-<br>expect backport to Tomcat 7 soon
 * Jetty 9 has native WebSocket API-<br>Jetty 9.1 adds `JSR-356`
 * Glassfish 4 w/ Tyrus WebSocket engine
 * More to follow
